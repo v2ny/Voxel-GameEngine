@@ -1,0 +1,10 @@
+build/
+.vscode/
+Libraries/source/glfw/docs
+Libraries/source/glfw/examples
+Libraries/source/glfw/tests
+Libraries/source/glfw/CONTRIBUTORS.md
+Libraries/include/glm
+Libraries/include/json
+Libraries/include/KHR
+Libraries/include/stb
