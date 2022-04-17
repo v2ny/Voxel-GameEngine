@@ -12,7 +12,7 @@
 - IDE: Visual Studio 2019 (You can use greater **versions**)
 - Langauge: C/C++
 - API: OpenGL
-- Additional Stuff: ImGUI
+- Additional Stuff: ImGUI or Nuklear
 
 ## - What is a game engine? -
 - A game engine is an program that you can make/create with it games and it most of the time includes 90% of the tools you want
