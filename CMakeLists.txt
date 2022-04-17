@@ -4,15 +4,16 @@ project(Voxel-GameEngine VERSION 1.0.0)
 include(CTest)
 enable_testing()
 
-add_executable(Voxel-GameEngine main.cpp floatsToRGB.cpp)
+add_executable(Voxel-GameEngine src/main.cpp src/pub/Utilities/Classes/BoxLogger.cpp src/pub/Utilities/Classes/floatsToRGB.cpp)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(INCLUDE_DIR_UTILITIES src/pub/Utilities/Headers)
 
-include_directories(Libraries/include/)
+include_directories(Libraries/include/ ${INCLUDE_DIR_UTILITIES})
 
 add_subdirectory(Libraries/source/glfw)
 add_subdirectory(Libraries/source/glad-ogl-core)

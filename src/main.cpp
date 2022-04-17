@@ -1,7 +1,8 @@
 #include <iostream>
-#include "floatsToRGB.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <floatsToRGB.h>
+#include <BoxLogger.h>
 
 int wWidth = 1024;
 int wHeight = 600;
@@ -11,6 +12,8 @@ int main()
 {
     // Define floatsToRGB
     rgbConverter rgbConv;
+    // Define BoxLogger
+    BoxLogger box_l;
 
     // At the first initialize glfw
     glfwInit();
@@ -42,6 +45,12 @@ int main()
 
     // Let's select a background color for our window
     glClearColor(rgbConv.convert(50.0f), rgbConv.convert(50.0f), rgbConv.convert(50.0f), 1.0f);
+
+    // Send a test MessageBox with our new function
+    box_l.Log("A basic message", "message", nullptr, box_l.msg);
+    box_l.Log("A basic message", "message", nullptr, box_l.err);
+    box_l.Log("A basic message", "message", nullptr, box_l.warn);
+    box_l.Log("A basic message", "message", nullptr, box_l.info);
 
     while(!glfwWindowShouldClose(window))
     {
