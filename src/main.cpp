@@ -47,10 +47,7 @@ int main()
     glClearColor(rgbConv.convert(50.0f), rgbConv.convert(50.0f), rgbConv.convert(50.0f), 1.0f);
 
     // Send a test MessageBox with our new function
-    box_l.Log("A basic message", "message", nullptr, box_l.msg);
-    box_l.Log("A basic message", "message", nullptr, box_l.err);
-    box_l.Log("A basic message", "message", nullptr, box_l.warn);
-    box_l.Log("A basic message", "message", nullptr, box_l.info);
+    // box_l.Log("A basic message", "message", nullptr, box_l.info);
 
     while(!glfwWindowShouldClose(window))
     {
