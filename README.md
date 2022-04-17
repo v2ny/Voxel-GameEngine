@@ -9,10 +9,10 @@
 - Be multi-platform (Windows, MacOS and Linux)
 
 ## - What will we use -
-- IDE: Visual Studio 2019 (You can use greater **versions**)
+- IDE: Visual Studio Code
 - Langauge: C/C++
 - API: OpenGL
-- Additional Stuff: ImGUI
+- Additional Stuff: ImGUI or Nuklear
 
 ## - What is a game engine? -
 - A game engine is an program that you can make/create with it games and it most of the time includes 90% of the tools you want
