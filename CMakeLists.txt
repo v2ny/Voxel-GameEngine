@@ -35,6 +35,9 @@ find_package(OpenGL REQUIRED)
 
 target_link_libraries(${EXECUTABLE_NAME} OpenGL::GL)
 
+# If you are not seeing the exe file comment from line 41 to 51 and type make or mingw32-make
+# And wait until you see the exe file then uncomment and type make or mingw32-make again
+# Then you can now run the program_build executable file without problems!
 add_custom_target(${CUSTOM_BUILD_DEST}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CUSTOM_BUILD_DEST}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CUSTOM_BUILD_DEST}/${CUSTOM_TARGET_SHADERS}
@@ -46,6 +49,9 @@ add_custom_target(${CUSTOM_BUILD_DEST}
 )
 
 add_dependencies(${EXECUTABLE_NAME} ${CUSTOM_BUILD_DEST})
+
+# If you did type make or mingw32-make and your changes didn't apply.
+# type make or mingw32-make again and try to run it
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
