@@ -75,7 +75,7 @@ int main()
     // Send a test MessageBox with our new function
     // box_l.Log("A basic message", "message", nullptr, box_l.info);
 
-    Shader shaderProgram("VertexShader.glsl", "FragmentShader.glsl");
+    Shader shaderProgram("incl_shaders/vrtx.s.obj", "incl_shaders/frgmnt.s.obj");
 
 	// Generates Vertex Array Object and binds it
 	VAO VAO1;
@@ -95,6 +95,10 @@ int main()
 
     while(!glfwWindowShouldClose(window))
     {
+        // To hide the console for windows
+        HWND hWnd = GetConsoleWindow();
+        ShowWindow( hWnd, SW_HIDE );
+
         // Let's clear our color buffer bit to get our background color appear!
         glClear(GL_COLOR_BUFFER_BIT);
 
