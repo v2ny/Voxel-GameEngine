@@ -75,7 +75,7 @@ int main()
     // Send a test MessageBox with our new function
     // box_l.Log("A basic message", "message", nullptr, box_l.info);
 
-    Shader shaderProgram("incl_shaders/vrtx.s.obj", "incl_shaders/frgmnt.s.obj");
+    Shader shaderProgram("binaries/incl_shaders/vrtx.s.obj", "binaries/incl_shaders/frgmnt.s.obj");
 
 	// Generates Vertex Array Object and binds it
 	VAO VAO1;
