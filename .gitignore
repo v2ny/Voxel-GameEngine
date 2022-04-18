@@ -1,5 +1,6 @@
 build/
 .vscode/
+.github/
 Libraries/source/glfw/docs
 Libraries/source/glfw/examples
 Libraries/source/glfw/tests
