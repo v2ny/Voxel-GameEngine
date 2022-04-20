@@ -41,8 +41,9 @@ include_directories(${INCLUDE_ARGS})
 add_subdirectory(Libraries/source/glfw)
 add_subdirectory(Libraries/source/glad-ogl-core)
 add_subdirectory(Libraries/source/imgui)
+add_subdirectory(Libraries/include/glm)
 
-target_link_libraries(${EXECUTABLE_NAME} glfw glad)
+target_link_libraries(${EXECUTABLE_NAME} glfw glad glm)
 
 find_package(OpenGL REQUIRED)
 find_path(STB_INCLUDE_DIR "stb.h") 
