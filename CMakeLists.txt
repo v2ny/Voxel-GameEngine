@@ -26,20 +26,24 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DEF_INCLUDE_DIR Libraries/include)
 set(GLFW_INCLUDE_DIR Libraries/source/glfw/include)
 set(GLAD_INCLUDE_DIR Libraries/source/glad-ogl-core/include)
+set(IMGUI_INCLUDE_DIR Libraries/source/imgui)
+set(STB_INCLUDE_DIR Libraries/include/stb)
 set(INCLUDE_DIR_UTILITIES src/pub/Utilities/Headers)
 set(INCLUDE_DIR_SHADERS src/GameEngine/Shaders)
-set(INCLUDE_ARGS ${DEF_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${INCLUDE_DIR_UTILITIES} ${INCLUDE_DIR_SHADERS})
+set(INCLUDE_ARGS ${DEF_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${INCLUDE_DIR_UTILITIES} ${INCLUDE_DIR_SHADERS} ${IMGUI_INCLUDE_DIR})
 
 include_directories(${INCLUDE_ARGS})
 
 add_subdirectory(Libraries/source/glfw)
 add_subdirectory(Libraries/source/glad-ogl-core)
+add_subdirectory(Libraries/source/imgui)
 
-target_link_libraries(${EXECUTABLE_NAME} glfw)
-target_link_libraries(${EXECUTABLE_NAME} glad)
+target_link_libraries(${EXECUTABLE_NAME} glfw glad)
 
 find_package(OpenGL REQUIRED)
+find_path(STB_INCLUDE_DIR "stb.h") 
 
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${STB_INCLUDE_DIR})
 target_link_libraries(${EXECUTABLE_NAME} OpenGL::GL)
 
 # If you are not seeing the exe file comment the add_custom_target & add_dependencies and type make or mingw32-make
