@@ -5,6 +5,7 @@
 #include <BoxLogger.h>
 #include <cmath>
 
+#include <Texture.h>
 #include <ShaderClass.h>
 #include <Organizing/VAO/VAO.h>
 #include <Organizing/VBO/VBO.h>
@@ -94,6 +95,10 @@ int main()
 
     GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
+    // Texture
+    Texture tex1("binaries/pkgs/imgs/ghpng.img.obj", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+    tex1.texUnit(shaderProgram, "tex0", 0);
+
     while(!glfwWindowShouldClose(window))
     {
         // To hide the console for windows
@@ -106,6 +111,7 @@ int main()
         // It explains it self
         shaderProgram.Activate();
         glUniform1f(uniID, 0.5f);
+        tex1.Bind();
 
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
@@ -121,6 +127,7 @@ int main()
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
+    tex1.Delete();
 	shaderProgram.Delete();
     // Delete window before ending the program
 	glfwDestroyWindow(window);
