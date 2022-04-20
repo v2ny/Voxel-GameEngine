@@ -11,6 +11,10 @@
 #include <Organizing/VBO/VBO.h>
 #include <Organizing/EBO/EBO.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 int wWidth = 1024;
 int wHeight = 600;
 const char* wTitle = "Voxel-GameEngine";
