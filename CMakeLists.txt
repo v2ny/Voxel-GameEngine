@@ -7,21 +7,7 @@ enable_testing()
 set(APPLICATION_PATH src/App)
 set(GAME_ENGINE_PATH src/GameEngine)
 set(PUB_UTILS_PATH src/pub/Utilities)
-set(IMGUI_STUFF Libraries/source/imgui/imconfig.h
-    Libraries/source/imgui/imgui_demo.cpp
-    Libraries/source/imgui/imgui_draw.cpp
-    Libraries/source/imgui/backends/imgui_impl_glfw.cpp
-    Libraries/source/imgui/backends/imgui_impl_glfw.h
-    Libraries/source/imgui/backends/imgui_impl_opengl3.cpp
-    Libraries/source/imgui/backends/imgui_impl_opengl3.h
-    Libraries/source/imgui/imgui_internal.h
-    Libraries/source/imgui/imgui_widgets.cpp
-    Libraries/source/imgui/imgui.cpp
-    Libraries/source/imgui/imgui.h
-    Libraries/source/imgui/imstb_rectpack.h
-    Libraries/source/imgui/imstb_textedit.h
-    Libraries/source/imgui/imstb_truetype.h)
-set(EXECUTABLE_CLASSES src/main.cpp ${PUB_UTILS_PATH}/Classes/BoxLogger.cpp ${PUB_UTILS_PATH}/Classes/floatsToRGB.cpp ${GAME_ENGINE_PATH}/Shaders/ShaderClass.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VBO/VBO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VAO/VAO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/EBO/EBO.cpp ${GAME_ENGINE_PATH}/stb/stb.cpp ${GAME_ENGINE_PATH}/TextureClass/Texture.cpp ${IMGUI_STUFF})
+set(EXECUTABLE_CLASSES src/main.cpp ${PUB_UTILS_PATH}/Classes/BoxLogger.cpp ${PUB_UTILS_PATH}/Classes/floatsToRGB.cpp ${GAME_ENGINE_PATH}/Shaders/ShaderClass.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VBO/VBO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VAO/VAO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/EBO/EBO.cpp ${GAME_ENGINE_PATH}/stb/stb.cpp ${GAME_ENGINE_PATH}/TextureClass/Texture.cpp)
 set(EXECUTABLE_NAME Voxel-GameEngine)
 set(DLL_CLASSES ${EXECUTABLE_CLASS} Libraries/source/glad-ogl-core/src/glad.c)
 set(DLL_NAME ${EXECUTABLE_NAME}.r)
@@ -32,7 +18,7 @@ set(LIB_BUILD_DEST lib)
 set(BIN_BUILD_DEST binaries)
 set(PKGS_BUILD_DEST pkgs)
 
-add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_CLASSES} ${IMGUI_STUFF})
+add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_CLASSES})
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)

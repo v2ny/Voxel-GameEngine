@@ -136,7 +136,7 @@ int main()
         // Let's clear our color buffer bit to get our background color appear!
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        float fov = 45.0f;
+        static float fov = 45.0f;
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
