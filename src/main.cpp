@@ -15,6 +15,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+
 int wWidth = 1024;
 int wHeight = 600;
 const char* wTitle = "Voxel-GameEngine";
@@ -22,17 +25,22 @@ const char* wTitle = "Voxel-GameEngine";
 // Vertices coordinates
 GLfloat vertices[] =
 {
-	-0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // Lower left corner
-	-0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // Upper left corner
-	 0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // Upper right corner
-	 0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	1.0f, 0.0f  // Lower right corner
+	-0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+	-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
+	 0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+	 0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
+	 0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	2.5f, 5.0f
 };
 
 // Indices for vertices order
 GLuint indices[] =
 {
-	0, 2, 1, // Upper triangle
-	0, 3, 2 // Lower triangle
+	0, 1, 2,
+	0, 2, 3,
+	0, 1, 4,
+	1, 2, 4,
+	2, 3, 4,
+	3, 0, 4
 };
 
 int main()
@@ -68,9 +76,6 @@ int main()
     }  
     gladLoadGL();
 
-    // Let's implement our opengl/window viewport
-    glViewport(0, 0, wWidth, wHeight);
-
     // Let's select a background color for our window
     glClearColor(rgbConv.convert(50.0f), rgbConv.convert(50.0f), rgbConv.convert(50.0f), 1.0f);
 
@@ -103,6 +108,25 @@ int main()
     Texture tex1("binaries/pkgs/imgs/ghpng.img.obj", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
     tex1.texUnit(shaderProgram, "tex0", 0);
 
+    // Variables that help the rotation of the pyramid
+	float rotation = 0.0f;
+	double prevTime = glfwGetTime();
+
+	// Enables the Depth Buffer
+	glEnable(GL_DEPTH_TEST);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;     // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.WantCaptureMouse = true;
+
+    ImGui::StyleColorsDark();
+    
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+
     while(!glfwWindowShouldClose(window))
     {
         // To hide the console for windows
@@ -110,17 +134,47 @@ int main()
         ShowWindow( hWnd, SW_HIDE );
 
         // Let's clear our color buffer bit to get our background color appear!
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        float fov = 45.0f;
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+		{
+			ImGui::SetNextWindowSize(ImVec2(124, 64));
+
+			if(ImGui::Begin("GLM Controls"))
+            {
+                float array[] = {35.0f, 45.0f, 70.0f, 85.0f, 90.0f};
+                if(ImGui::Button("Set"))
+                {
+                    fov = 85.0f;
+                }
+            }
+
+            ImGui::End();
+        }
+
+        // Rendering
+        ImGui::Render();
         // It explains it self
         shaderProgram.Activate();
+
+        double crntTime = glfwGetTime();
+		if (crntTime - prevTime >= 1 / 60)
+		{
+			rotation += 0.5f;
+			prevTime = crntTime;
+		}
 
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
 
+        model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
         view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
-        projection = glm::perspective(glm::radians(85.0f), (float)(wWidth / wHeight), 0.01f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), (float)(wWidth / wHeight), 0.01f, 100.0f);
 
         int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -135,7 +189,12 @@ int main()
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices
-		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+        // Let's implement our opengl/window viewport
+        glViewport(0, 0, wWidth, wHeight);
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // Important to get our window working properly!
         glfwSwapBuffers(window);
@@ -149,6 +208,9 @@ int main()
     tex1.Delete();
 	shaderProgram.Delete();
     // Delete window before ending the program
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 	glfwDestroyWindow(window);
     // To exit the window when it leaves the while loop (It leaves the while loop if there's an close/crash interupt)
     glfwTerminate();

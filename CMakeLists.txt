@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.20)
 project(Voxel-GameEngine VERSION 1.0.0)
 
 include(CTest)
@@ -7,7 +7,21 @@ enable_testing()
 set(APPLICATION_PATH src/App)
 set(GAME_ENGINE_PATH src/GameEngine)
 set(PUB_UTILS_PATH src/pub/Utilities)
-set(EXECUTABLE_CLASSES src/main.cpp ${PUB_UTILS_PATH}/Classes/BoxLogger.cpp ${PUB_UTILS_PATH}/Classes/floatsToRGB.cpp ${GAME_ENGINE_PATH}/Shaders/ShaderClass.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VBO/VBO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VAO/VAO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/EBO/EBO.cpp ${GAME_ENGINE_PATH}/stb/stb.cpp ${GAME_ENGINE_PATH}/TextureClass/Texture.cpp)
+set(IMGUI_STUFF Libraries/source/imgui/imconfig.h
+    Libraries/source/imgui/imgui_demo.cpp
+    Libraries/source/imgui/imgui_draw.cpp
+    Libraries/source/imgui/backends/imgui_impl_glfw.cpp
+    Libraries/source/imgui/backends/imgui_impl_glfw.h
+    Libraries/source/imgui/backends/imgui_impl_opengl3.cpp
+    Libraries/source/imgui/backends/imgui_impl_opengl3.h
+    Libraries/source/imgui/imgui_internal.h
+    Libraries/source/imgui/imgui_widgets.cpp
+    Libraries/source/imgui/imgui.cpp
+    Libraries/source/imgui/imgui.h
+    Libraries/source/imgui/imstb_rectpack.h
+    Libraries/source/imgui/imstb_textedit.h
+    Libraries/source/imgui/imstb_truetype.h)
+set(EXECUTABLE_CLASSES src/main.cpp ${PUB_UTILS_PATH}/Classes/BoxLogger.cpp ${PUB_UTILS_PATH}/Classes/floatsToRGB.cpp ${GAME_ENGINE_PATH}/Shaders/ShaderClass.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VBO/VBO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VAO/VAO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/EBO/EBO.cpp ${GAME_ENGINE_PATH}/stb/stb.cpp ${GAME_ENGINE_PATH}/TextureClass/Texture.cpp ${IMGUI_STUFF})
 set(EXECUTABLE_NAME Voxel-GameEngine)
 set(DLL_CLASSES ${EXECUTABLE_CLASS} Libraries/source/glad-ogl-core/src/glad.c)
 set(DLL_NAME ${EXECUTABLE_NAME}.r)
@@ -18,7 +32,7 @@ set(LIB_BUILD_DEST lib)
 set(BIN_BUILD_DEST binaries)
 set(PKGS_BUILD_DEST pkgs)
 
-add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_CLASSES})
+add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_CLASSES} ${IMGUI_STUFF})
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -29,6 +43,7 @@ set(DEF_INCLUDE_DIR Libraries/include)
 set(GLFW_INCLUDE_DIR Libraries/source/glfw/include)
 set(GLAD_INCLUDE_DIR Libraries/source/glad-ogl-core/include)
 set(IMGUI_INCLUDE_DIR Libraries/source/imgui)
+set(IMGUI_LIBRARIES ImGui;glfw;OpenGL::GL)
 set(STB_INCLUDE_DIR Libraries/include/stb)
 set(PKGS_INCLUDE_DIR assets)
 set(INCLUDE_DIR_UTILITIES ${PUB_UTILS_PATH}/Headers)
@@ -49,7 +64,7 @@ find_package(OpenGL REQUIRED)
 find_path(STB_INCLUDE_DIR "stb.h") 
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${STB_INCLUDE_DIR})
-target_link_libraries(${EXECUTABLE_NAME} OpenGL::GL)
+target_link_libraries(${EXECUTABLE_NAME} OpenGL::GL ${IMGUI_LIBRARIES})
 
 # If you are not seeing the exe file comment the add_custom_target & add_dependencies and type make or mingw32-make
 # And wait until you see the exe file then uncomment and type make or mingw32-make again
