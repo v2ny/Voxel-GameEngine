@@ -15,8 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
+#include <ImGuiHelper.h>
 
 int wWidth = 1024;
 int wHeight = 600;
@@ -49,6 +48,8 @@ int main()
     rgbConverter rgbConv;
     // Define BoxLogger
     BoxLogger box_l;
+    // Define ImGuiHelper
+    ImGuiHelper igh;
 
     // At the first initialize glfw
     glfwInit();
@@ -115,42 +116,55 @@ int main()
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;     // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    io.WantCaptureMouse = true;
-
-    ImGui::StyleColorsDark();
-    
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 330 core");
+    // Sets the default settings for imgui and use a custom font
+    igh.ImGuiDefaultSettings(window, "binaries/pkgs/fonts/lgeorgecfeb.fnt.obj", "#version 330 core");
 
     while(!glfwWindowShouldClose(window))
     {
-        // To hide the console for windows
-        HWND hWnd = GetConsoleWindow();
-        ShowWindow( hWnd, SW_HIDE );
+        // A boolean to know when to show the Console and hide it
+        static bool CONSOLE_SHOW = false;
+
+        if (CONSOLE_SHOW == false)
+        {
+            // To hide the console for windows
+            HWND hWnd = GetConsoleWindow();
+            ShowWindow( hWnd, SW_HIDE );
+        }
+        if (CONSOLE_SHOW == true)
+        {
+            // To show the console for windows
+            HWND hWnd = GetConsoleWindow();
+            ShowWindow( hWnd, SW_SHOW );
+        }
 
         // Let's clear our color buffer bit to get our background color appear!
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Perspective fov
         static float fov = 45.0f;
+
+        // Distance View
+        static float nearDistanceView = 0.01f;
+        static float farDistanceView = 100.0f;
+
+        // Aspect Ratio
+        static float svd_width = wWidth;
+        static float svd_height = wHeight;
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 		{
-			ImGui::SetNextWindowSize(ImVec2(124, 64));
+			ImGui::SetNextWindowSize(ImVec2(326, 400));
 
-			if(ImGui::Begin("GLM Controls"))
+			if(ImGui::Begin("Window Controls"))
             {
-                float array[] = {35.0f, 45.0f, 70.0f, 85.0f, 90.0f};
-                if(ImGui::Button("Set"))
-                {
-                    fov = 85.0f;
-                }
+                ImGui::Text("Camera Controls :-");
+                ImGui::SliderFloat("FOV Changer", &fov, 30.0f, 130.0f, "%.1f", 1.0f);
+                ImGui::SliderFloat("Near Distance View", &nearDistanceView, 0.01f, 10.0f, "%.2f", 1.0f);
+                ImGui::SliderFloat("Far Distance View", &farDistanceView, 1.0f, 1000.0f, "%.1f", 1.0f);
+                ImGui::Text("Console Control :-");
+                ImGui::Checkbox("Show Console", &CONSOLE_SHOW);
             }
 
             ImGui::End();
@@ -161,6 +175,7 @@ int main()
         // It explains it self
         shaderProgram.Activate();
 
+        // Simple timer
         double crntTime = glfwGetTime();
 		if (crntTime - prevTime >= 1 / 60)
 		{
@@ -174,7 +189,7 @@ int main()
 
         model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
         view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
-        projection = glm::perspective(glm::radians(fov), (float)(wWidth / wHeight), 0.01f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), (float)(svd_width / svd_height), nearDistanceView, farDistanceView);
 
         int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -192,9 +207,18 @@ int main()
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
         // Let's implement our opengl/window viewport
-        glViewport(0, 0, wWidth, wHeight);
+        {
+            int winNewWidth;
+            int winNewHeight;
+            glfwGetWindowSize(window, &winNewWidth, &winNewHeight);
 
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            svd_width = winNewWidth;
+            svd_height = winNewHeight;
+
+            glViewport(0, 0, winNewWidth, winNewHeight);
+        }
+
+        igh.ImGuiRenderDD();
 
         // Important to get our window working properly!
         glfwSwapBuffers(window);
