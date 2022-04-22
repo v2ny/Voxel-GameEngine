@@ -123,7 +123,7 @@ int main()
     {
         // A boolean to know when to show the Console and hide it
         static bool CONSOLE_SHOW = false;
-
+        
         if (CONSOLE_SHOW == false)
         {
             // To hide the console for windows
@@ -151,20 +151,102 @@ int main()
         static float svd_width = wWidth;
         static float svd_height = wHeight;
 
+        // Pyramid position
+        static float posX = 0.0f;
+        static float posY = 1.0f;
+        static float posZ = 0.0f;
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 		{
-			ImGui::SetNextWindowSize(ImVec2(326, 400));
+            ImGui::SetNextWindowSize(ImVec2(260, (svd_height)));
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(260, (svd_height)), ImVec2(260, (svd_height)));
 
-			if(ImGui::Begin("Window Controls"))
+            bool is_open = true;
+            bool is_open2 = true;
+
+            static bool cameraSelected = false;
+            static bool pyramidSelected = false;
+
+            if (ImGui::Begin("game_obj_list", &is_open, ImGuiWindowFlags_NoTitleBar))
             {
-                ImGui::Text("Camera Controls :-");
-                ImGui::SliderFloat("FOV Changer", &fov, 30.0f, 130.0f, "%.1f", 1.0f);
-                ImGui::SliderFloat("Near Distance View", &nearDistanceView, 0.01f, 10.0f, "%.2f", 1.0f);
-                ImGui::SliderFloat("Far Distance View", &farDistanceView, 1.0f, 1000.0f, "%.1f", 1.0f);
-                ImGui::Text("Console Control :-");
-                ImGui::Checkbox("Show Console", &CONSOLE_SHOW);
+                std::string objListTitle = "Game Objects List";
+                auto windowWidth = ImGui::GetWindowSize().x;
+                auto textWidth   = ImGui::CalcTextSize(objListTitle.c_str()).x;
+
+                ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+                ImGui::Text(objListTitle.c_str());
+                if (ImGui::Button("Camera", ImVec2(ImGui::GetWindowSize().x, 20)))
+                {
+                    cameraSelected = true;
+                    pyramidSelected = false;
+                }
+                if (ImGui::Button("Pyramid", ImVec2(ImGui::GetWindowSize().x, 20)))
+                {
+                    pyramidSelected = true;
+                    cameraSelected = false;
+                }
+            }
+            
+            ImGui::End();
+
+            ImGui::SetNextWindowSize(ImVec2(260, (svd_height / 1.5)));
+            ImGui::SetNextWindowPos(ImVec2(((svd_width) - 260), 0));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(260, (svd_height / 1.5)), ImVec2(260, (svd_height / 1.5)));
+
+            if (ImGui::Begin("obj_properties", &is_open2, ImGuiWindowFlags_NoTitleBar))
+            {
+                std::string objListTitle = "Object Properties";
+                static const char* status = "\nNo game object selected!";
+
+                auto windowWidth = ImGui::GetWindowSize().x;
+                auto textWidth   = ImGui::CalcTextSize(objListTitle.c_str()).x;
+
+                ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+                ImGui::Text(objListTitle.c_str());
+                ImGui::Text(status);
+                if(cameraSelected == true)
+                {
+                    status = "Game Object: Camera";
+                    ImGui::Text("Camera Position :-");
+                    ImGui::InputFloat("X", &posX, -360.0f, 360.0f, "%.1f", 0);
+                    ImGui::InputFloat("Y", &posY, -360.0f, 360.0f, "%.1f", 0);
+                    ImGui::InputFloat("Z", &posZ, -360.0f, 360.0f, "%.1f", 0);
+                    ImGui::Text("Camera Options :-");
+                    ImGui::SliderFloat("FOV", &fov, 30.0f, 130.0f, "%.1f", 1.0f);
+                    ImGui::SliderFloat("Near Clip", &nearDistanceView, 0.01f, 10.0f, "%.1f", 1.0f);
+                    ImGui::SliderFloat("Far Clip", &farDistanceView, 5.0f, 1500.0f, "%.1f", 1.0f);
+                }
+                else if(pyramidSelected == true)
+                {
+                    status = "Game Object: Pyramid";
+                    ImGui::Text("Pyramid Position :-");
+                    ImGui::SliderFloat("X", &posX, -360.0f, 360.0f, "%.1f", 1.0f);
+                    ImGui::SliderFloat("Y", &posY, -360.0f, 360.0f, "%.1f", 1.0f);
+                    ImGui::SliderFloat("Z", &posZ, -360.0f, 360.0f, "%.1f", 1.0f);
+                }
+                else
+                {
+                    status = "\nNo game object selected!";
+                }
+            }
+
+            ImGui::End();
+
+            ImGui::SetNextWindowSize(ImVec2(svd_width - (260 * 2), svd_height / 0.5));
+            ImGui::SetNextWindowPos(ImVec2(svd_width - (260 * 2), svd_height / 0.5));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(svd_width - (260 * 2), svd_height / 0.5), ImVec2(svd_width - (260 * 2), svd_height / 0.5));
+
+            if (ImGui::Begin("console_output", &is_open2, ImGuiWindowFlags_NoTitleBar))
+            {
+                std::string objListTitle = "Console Output";
+                auto windowWidth = ImGui::GetWindowSize().x;
+                auto textWidth   = ImGui::CalcTextSize(objListTitle.c_str()).x;
+
+                ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+                ImGui::Text(objListTitle.c_str());
             }
 
             ImGui::End();
@@ -188,8 +270,15 @@ int main()
         glm::mat4 projection = glm::mat4(1.0f);
 
         model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
-        projection = glm::perspective(glm::radians(fov), (float)(svd_width / svd_height), nearDistanceView, farDistanceView);
+        view = glm::translate(view, glm::vec3(posX, posY, posZ));
+        if(svd_width < 200)
+        {
+            projection = glm::perspective(glm::radians(fov), (float)(1024 / 600), nearDistanceView, farDistanceView);
+        }
+        else if(svd_width > 200)
+        {
+            projection = glm::perspective(glm::radians(fov), (float)(svd_width / svd_height), nearDistanceView, farDistanceView);
+        }
 
         int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -215,7 +304,7 @@ int main()
             svd_width = winNewWidth;
             svd_height = winNewHeight;
 
-            glViewport(0, 0, winNewWidth, winNewHeight);
+            glViewport(260, 0, winNewWidth - (260 * 2), winNewHeight - (winNewHeight / 0.5));
         }
 
         igh.ImGuiRenderDD();
