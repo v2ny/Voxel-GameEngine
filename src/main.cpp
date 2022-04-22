@@ -235,6 +235,8 @@ int main()
 
             ImGui::End();
 
+            // TODO: Rework tommorow 
+
             ImGui::SetNextWindowSize(ImVec2(svd_width - (260 * 2), svd_height / 0.5));
             ImGui::SetNextWindowPos(ImVec2(svd_width - (260 * 2), svd_height / 0.5));
             ImGui::SetNextWindowSizeConstraints(ImVec2(svd_width - (260 * 2), svd_height / 0.5), ImVec2(svd_width - (260 * 2), svd_height / 0.5));
@@ -304,6 +306,7 @@ int main()
             svd_width = winNewWidth;
             svd_height = winNewHeight;
 
+            // TODO: Fix the viewport coordinates
             glViewport(260, 0, winNewWidth - (260 * 2), winNewHeight - (winNewHeight / 0.5));
         }
 
