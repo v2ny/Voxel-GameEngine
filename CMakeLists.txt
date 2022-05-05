@@ -64,8 +64,8 @@ add_custom_target(${CUSTOM_BUILD_DEST}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CUSTOM_BUILD_DEST}/${BIN_BUILD_DEST}/${CUSTOM_TARGET_SHADERS}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${EXECUTABLE_NAME}.exe ${CUSTOM_BUILD_DEST}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different lib${EXECUTABLE_NAME}.r.dll ${CUSTOM_BUILD_DEST}/${BIN_BUILD_DEST}/${LIB_BUILD_DEST}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different Libraries/source/glfw/src/glfw3.dll ${CUSTOM_BUILD_DEST}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different Libraries/source/glad-ogl-core/libglad.dll ${CUSTOM_BUILD_DEST}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/DLLs/glfw3.dll ${CUSTOM_BUILD_DEST}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/DLLs/libglad.dll ${CUSTOM_BUILD_DEST}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different lib${EXECUTABLE_NAME}.r.dll ${CUSTOM_BUILD_DEST}/${BIN_BUILD_DEST}/${LIB_BUILD_DEST}
     COMMAND ${CMAKE_COMMAND} -E copy_directory Libraries ${CUSTOM_BUILD_DEST}/${BIN_BUILD_DEST}/${LIB_BUILD_DEST}
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${INCLUDE_DIR_SHADERS}/Source/ ${CUSTOM_BUILD_DEST}/${BIN_BUILD_DEST}/${CUSTOM_TARGET_SHADERS}
