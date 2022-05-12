@@ -10,6 +10,7 @@
 #include <glm/gtx/vector_angle.hpp>
 
 #include <ShaderClass.h>
+#include <deltaTime.h>
 
 class Camera
 {
@@ -23,8 +24,9 @@ class Camera
 
         int vpWidth, vpHeight;
         GLFWwindow* wind;
+        Time Time;
 
-        float Speed = 0.01f;
+        float Speed = 0.01f * Time.deltaTime(1000.0f);
         float Sensitivity = 85.0f;
 
         Camera(int viewportWidth, int viewportHeight, glm::vec3 Position, GLFWwindow* window);

@@ -1,20 +1,7 @@
-#include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <Mesh.h>
+
 #include <floatsToRGB.h>
 #include <BoxLogger.h>
-#include <cmath>
-
-#include <Texture.h>
-#include <ShaderClass.h>
-#include <Organizing/VAO/VAO.h>
-#include <Organizing/VBO/VBO.h>
-#include <Organizing/EBO/EBO.h>
-#include <Camera.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include <CustomMessageBox.h>
 #include <GUI.h>
@@ -29,12 +16,12 @@ static int wHeight = 600;
 const char* wTitle = "Voxel-GameEngine";
 
 // Vertices coordinates
-GLfloat vertices[] =
-{ //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
-	-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
-	-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
-	 1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
-	 1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
+Vertex vertices[] =
+{ //               COORDINATES           /            COLORS          /           TexCoord         /       NORMALS         //
+	Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+	Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+	Vertex{glm::vec3( 1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
+	Vertex{glm::vec3( 1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
 };
 
 // Indices for vertices order
@@ -44,16 +31,16 @@ GLuint indices[] =
 	0, 2, 3
 };
 
-GLfloat lightVertices[] =
+Vertex lightVertices[] =
 { //     COORDINATES     //
-	-0.1f, -0.1f,  0.1f,
-	-0.1f, -0.1f, -0.1f,
-	 0.1f, -0.1f, -0.1f,
-	 0.1f, -0.1f,  0.1f,
-	-0.1f,  0.1f,  0.1f,
-	-0.1f,  0.1f, -0.1f,
-	 0.1f,  0.1f, -0.1f,
-	 0.1f,  0.1f,  0.1f
+	Vertex{glm::vec3(-0.1f, -0.1f,  0.1f)},
+	Vertex{glm::vec3(-0.1f, -0.1f, -0.1f)},
+	Vertex{glm::vec3(0.1f, -0.1f, -0.1f)},
+	Vertex{glm::vec3(0.1f, -0.1f,  0.1f)},
+	Vertex{glm::vec3(-0.1f,  0.1f,  0.1f)},
+	Vertex{glm::vec3(-0.1f,  0.1f, -0.1f)},
+	Vertex{glm::vec3(0.1f,  0.1f, -0.1f)},
+	Vertex{glm::vec3(0.1f,  0.1f,  0.1f)}
 };
 
 GLuint lightIndices[] =
@@ -114,68 +101,46 @@ int main()
     // Hides the window 
     glfwHideWindow(window);
 
+    Texture textures[]
+    {
+        Texture("binaries/pkgs/imgs/materials/Tiles/tdiuse.img.obj", "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
+        Texture("binaries/pkgs/imgs/materials/Tiles/tspec.img.obj", "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
+    };
+
     // Send a test MessageBox with our new function
     // box_l.Log("A basic message", "message", nullptr, box_l.info);
 
     Shader shaderProgram("binaries/incl_shaders/vrtx.s.obj", "binaries/incl_shaders/frgmnt.s.obj");
-
-	// Generates Vertex Array Object and binds it
-	VAO VAO1;
-	VAO1.Bind();
-
-	// Generates Vertex Buffer Object and links it to vertices
-	VBO VBO1(vertices, sizeof(vertices));
-	// Generates Element Buffer Object and links it to indices
-	EBO EBO1(indices, sizeof(indices));
-
-	// Links VBO to VAO
-	VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);
-	VAO1.LinkAttribute(VBO1, 1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float)));
-	VAO1.LinkAttribute(VBO1, 2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float)));
-	VAO1.LinkAttribute(VBO1, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
-	// Unbind all to prevent accidentally modifying them
-	VAO1.Unbind();
-	VBO1.Unbind();
-	EBO1.Unbind();
+    std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
+	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
+	std::vector <Texture> tex(textures, textures + sizeof(textures) / sizeof(Texture));
+	// Create floor mesh
+	Mesh floor(verts, ind, tex);
 
     // Shader for light cube
 	Shader lightShader("binaries/incl_shaders/lght.vrtx.s.obj", "binaries/incl_shaders/lght.frgmnt.s.obj");
-	// Generates Vertex Array Object and binds it
-	VAO lightVAO;
-	lightVAO.Bind();
-	// Generates Vertex Buffer Object and links it to vertices
-	VBO lightVBO(lightVertices, sizeof(lightVertices));
-	// Generates Element Buffer Object and links it to indices
-	EBO lightEBO(lightIndices, sizeof(lightIndices));
-	// Links VBO attributes such as coordinates and colors to VAO
-	lightVAO.LinkAttribute(lightVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
-	// Unbind all to prevent accidentally modifying them
-	lightVAO.Unbind();
-	lightVBO.Unbind();
-	lightEBO.Unbind();
+	// Store mesh data in vectors for the mesh
+	std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));
+	std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
+	// Crate light mesh
+	Mesh light(lightVerts, lightInd, tex);
 
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::mat4 lightModel = glm::mat4(1.0f);
 	lightModel = glm::translate(lightModel, lightPos);
 
-	glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::mat4 pyramidModel = glm::mat4(1.0f);
-	pyramidModel = glm::translate(pyramidModel, pyramidPos);
+	glm::vec3 objectPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::mat4 objectModel = glm::mat4(1.0f);
+	objectModel = glm::translate(objectModel, objectPos);
 
 	lightShader.Activate();
 	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
 	glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	shaderProgram.Activate();
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-
-    // Texture
-    Texture tex1("binaries/pkgs/imgs/materials/Tiles/tdiuse.img.obj", GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE);
-    tex1.texUnit(shaderProgram, "tex0", 0);
-    Texture tex2("binaries/pkgs/imgs/materials/Tiles/tspec.img.obj", GL_TEXTURE_2D, 1, GL_RED, GL_UNSIGNED_BYTE);
-    tex2.texUnit(shaderProgram, "tex1", 0);
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
@@ -188,10 +153,14 @@ int main()
 
     // Registers the glfw window to the AppGui
     // AppGui.GUI_CLASS_REGISTERES(window);
-    
+
     // Shows our window
     glfwShowWindow(window);
 
+    // Turns on VSync
+    glfwSwapInterval(1);
+
+    // Game Logic
     while(!glfwWindowShouldClose(window))
     {
         // A boolean to know when to show the Console and hide it
@@ -234,36 +203,15 @@ int main()
         player0.Inputs(window);
         player0.updateMatrix(fov, nearDistanceView, farDistanceView);
 
-        // It explains it self
-        shaderProgram.Activate();
+        // GLuint ics = glGetUniformLocation(shaderProgram.ID, "innerConeSize");
+        // GLuint ocs = glGetUniformLocation(shaderProgram.ID, "outterConeSize");
+
+        // glUniform1f(ics, AppGui.appGui_ICS);
+        // glUniform1f(ocs, AppGui.appGui_OCS);
         
-        GLuint ics = glGetUniformLocation(shaderProgram.ID, "innerConeSize");
-        GLuint ocs = glGetUniformLocation(shaderProgram.ID, "outterConeSize");
-
-        glUniform1f(ics, AppGui.appGui_ICS);
-        glUniform1f(ocs, AppGui.appGui_OCS);
-
-        glUniform3f(glGetUniformLocation(shaderProgram.ID, "camPos"), player0.Position.x, player0.Position.y, player0.Position.z);
-		// Export the camMatrix to the Vertex Shader of the pyramid
-		player0.Matrix(shaderProgram, "camMatrix");
-        // Bind the textures
-        tex1.Bind();
-        tex2.Bind();
-		// Bind the VAO so OpenGL knows to use it
-		VAO1.Bind();
-		// Draw primitives, number of indices, datatype of indices, index of indices
-		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-
-        // Activating Light Shader
-        lightShader.Activate();
-		// Export the camMatrix to the Vertex Shader of the light cube
-		player0.Matrix(lightShader, "camMatrix");
-		// Bind the VAO so OpenGL knows to use it
-		lightVAO.Bind();
-		// Draw primitives, number of indices, datatype of indices, index of indices
-		// glDrawElements(GL_TRIANGLES, sizeof(lightIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
-
-        // Bind the Texture to display it?
+        // Draws our meshs
+        floor.Draw(shaderProgram, player0);
+        light.Draw(lightShader, player0);
 
         // Let's implement our opengl/window viewport
         {
@@ -286,14 +234,7 @@ int main()
     }
 
     // Delete all the objects we've created
-	VAO1.Delete();
-	VBO1.Delete();
-	EBO1.Delete();
-    tex1.Delete();
 	shaderProgram.Delete();
-    lightVAO.Delete();
-	lightVBO.Delete();
-	lightEBO.Delete();
 	lightShader.Delete();
     // Delete's ImGui Rendering Stuff
     // ImGui_ImplOpenGL3_Shutdown();

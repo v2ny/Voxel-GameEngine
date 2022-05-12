@@ -20,11 +20,11 @@ void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane)
     // Just to make sure that it doesnt make the aspect-ratio 0
     if(windowSavedW < 200)
     {
-        projection = glm::perspective(glm::radians(FOVdeg), (float)(1024 / 600), nearPlane, farPlane);
+        projection = glm::perspective(glm::radians(FOVdeg), (float)1024 / 600, nearPlane, farPlane);
     }
     else if(windowSavedW > 200)
     {
-        projection = glm::perspective(glm::radians(FOVdeg), (windowSavedW / windowSavedH), nearPlane, farPlane);
+        projection = glm::perspective(glm::radians(FOVdeg), windowSavedW / windowSavedH, nearPlane, farPlane);
     }
     
     glfwGetFramebufferSize(wind, &vpWidth, &vpHeight);
@@ -76,11 +76,11 @@ void Camera::Inputs(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     {
-        Speed = 0.023f;
+        Speed = 0.023f * Time.deltaTime(60.0f);
     }
     else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
     {
-        Speed = 0.01f;
+        Speed = 0.01f * Time.deltaTime(60.0f);
     }
 
     if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)

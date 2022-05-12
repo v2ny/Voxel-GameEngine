@@ -7,7 +7,14 @@ enable_testing()
 set(APPLICATION_PATH src/App)
 set(GAME_ENGINE_PATH src/GameEngine)
 set(PUB_UTILS_PATH src/pub/Utilities)
-set(EXECUTABLE_CLASSES src/main.cpp ${PUB_UTILS_PATH}/Classes/BoxLogger.cpp ${APPLICATION_PATH}/CustomMessageBox/CustomMessageBox.cpp ${PUB_UTILS_PATH}/Classes/floatsToRGB.cpp ${GAME_ENGINE_PATH}/Shaders/ShaderClass.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VBO/VBO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VAO/VAO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/EBO/EBO.cpp ${GAME_ENGINE_PATH}/stb/stb.cpp ${GAME_ENGINE_PATH}/TextureClass/Texture.cpp ${GAME_ENGINE_PATH}/ImGuiHelper/ImGuiHelper.cpp ${APPLICATION_PATH}/GUI/GUI.cpp ${GAME_ENGINE_PATH}/CameraClass/Camera.cpp)
+set(EXECUTABLE_CLASSES src/main.cpp ${PUB_UTILS_PATH}/Classes/BoxLogger.cpp 
+    ${APPLICATION_PATH}/CustomMessageBox/CustomMessageBox.cpp ${PUB_UTILS_PATH}/Classes/floatsToRGB.cpp 
+    ${GAME_ENGINE_PATH}/Shaders/ShaderClass.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/VBO/VBO.cpp 
+    ${GAME_ENGINE_PATH}/Shaders/Organizing/VAO/VAO.cpp ${GAME_ENGINE_PATH}/Shaders/Organizing/EBO/EBO.cpp 
+    ${GAME_ENGINE_PATH}/stb/stb.cpp ${GAME_ENGINE_PATH}/TextureClass/Texture.cpp 
+    ${GAME_ENGINE_PATH}/ImGuiHelper/ImGuiHelper.cpp ${APPLICATION_PATH}/GUI/GUI.cpp 
+    ${GAME_ENGINE_PATH}/CameraClass/Camera.cpp ${PUB_UTILS_PATH}/Classes/deltaTime.cpp 
+    ${GAME_ENGINE_PATH}/MeshClass/Mesh.cpp)
 set(EXECUTABLE_NAME Voxel-GameEngine)
 set(DLL_CLASSES ${EXECUTABLE_CLASS} Libraries/source/glad-ogl-core/src/glad.c)
 set(DLL_NAME ${EXECUTABLE_NAME}.r)
@@ -40,7 +47,8 @@ set(INCLUDE_DIR_CAMERA_CLASS ${GAME_ENGINE_PATH}/CameraClass)
 set(INCLUDE_DIR_TEXTURES_CLASS ${GAME_ENGINE_PATH}/TextureClass)
 set(INCLUDE_DIR_CUSTOM_MESSAGE_BOX ${APPLICATION_PATH}/CustomMessageBox)
 set(INCLUDE_DIR_GUI_CLASS ${APPLICATION_PATH}/GUI)
-set(INCLUDE_ARGS ${DEF_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${INCLUDE_DIR_UTILITIES} ${INCLUDE_DIR_SHADERS} ${INCLUDE_DIR_CAMERA_CLASS} ${IMGUI_INCLUDE_DIR} ${INCLUDE_DIR_TEXTURES_CLASS} ${INCLUDE_DIR_IGH} ${INCLUDE_DIR_CUSTOM_MESSAGE_BOX} ${INCLUDE_DIR_GUI_CLASS})
+set(INCLUDE_DIR_MESH_CLASS ${GAME_ENGINE_PATH}/MeshClass)
+set(INCLUDE_ARGS ${DEF_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${INCLUDE_DIR_UTILITIES} ${INCLUDE_DIR_SHADERS} ${INCLUDE_DIR_CAMERA_CLASS} ${IMGUI_INCLUDE_DIR} ${INCLUDE_DIR_TEXTURES_CLASS} ${INCLUDE_DIR_IGH} ${INCLUDE_DIR_CUSTOM_MESSAGE_BOX} ${INCLUDE_DIR_GUI_CLASS} ${INCLUDE_DIR_MESH_CLASS})
 
 include_directories(${INCLUDE_ARGS})
 

@@ -1,45 +1,43 @@
 #include <Texture.h>
 
-Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum format, GLenum pixelType)
+Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum format, GLenum pixelType)
 {
     type = texType;
     int widthImg, heightImg, numColCh{};
     unsigned char* bytes;
     stbi_set_flip_vertically_on_load(true);
-    stbi_ldr_to_hdr_gamma(1.0f);
 
     glGenTextures(1, &ID);
     glActiveTexture(GL_TEXTURE0 + slot);
     unit = slot;
-    glBindTexture(texType, ID);
+    glBindTexture(GL_TEXTURE_2D, ID);
 
-    glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glTexParameteri(texType, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(texType, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     if (format == GL_RGBA) {
         bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, STBI_rgb_alpha);
-        glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, pixelType, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, pixelType, bytes);
     }
     else if (format == GL_RGB) {
         bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, STBI_rgb);
-        glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGB, pixelType, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGB, pixelType, bytes);
     }
     else if (format == GL_RED) {
         bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 1);
-        glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, GL_RED, pixelType, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RED, pixelType, bytes);
     }
     else {
         bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
-        glTexImage2D(texType, 0, GL_RGB, widthImg, heightImg, 0, GL_RGB, pixelType, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthImg, heightImg, 0, GL_RGB, pixelType, bytes);
     }
-    glGenerateMipmap(texType);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(bytes);
-    glBindTexture(texType, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
@@ -52,12 +50,12 @@ void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
 void Texture::Bind()
 {
     glActiveTexture(GL_TEXTURE0 + unit);
-    glBindTexture(type, ID);
+    glBindTexture(GL_TEXTURE_2D, ID);
 }
 
 void Texture::Unbind()
 {
-    glBindTexture(type, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::Delete()
