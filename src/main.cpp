@@ -184,10 +184,10 @@ int main()
     Camera player0(wWidth, wHeight, glm::vec3(0.0f, 0.0f, 2.0f), window);
 
     // Sets the default settings for imgui and use a custom font
-    igh.ImGuiDefaultSettings(window, "binaries/pkgs/fonts/lgeorgecfeb.fnt.obj", "#version 330 core");
+    // igh.ImGuiDefaultSettings(window, "binaries/pkgs/fonts/lgeorgecfeb.fnt.obj", "#version 330 core");
 
     // Registers the glfw window to the AppGui
-    AppGui.GUI_CLASS_REGISTERES(window);
+    // AppGui.GUI_CLASS_REGISTERES(window);
     
     // Shows our window
     glfwShowWindow(window);
@@ -226,10 +226,10 @@ int main()
         static float svd_width = wWidth;
         static float svd_height = wHeight;
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        AppGui.Place(shaderProgram);
-        ImGui::Render();
+        // ImGui_ImplOpenGL3_NewFrame();
+        // ImGui_ImplGlfw_NewFrame();
+        // AppGui.Place(shaderProgram);
+        // ImGui::Render();
 
         player0.Inputs(window);
         player0.updateMatrix(fov, nearDistanceView, farDistanceView);
@@ -278,7 +278,7 @@ int main()
         }
 
         // ImGui Render Draw Data
-        igh.ImGuiRenderDD();
+        // igh.ImGuiRenderDD();
 
         // Important to get our window working properly!
         glfwSwapBuffers(window);
@@ -296,9 +296,9 @@ int main()
 	lightEBO.Delete();
 	lightShader.Delete();
     // Delete's ImGui Rendering Stuff
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    // ImGui_ImplOpenGL3_Shutdown();
+    // ImGui_ImplGlfw_Shutdown();
+    // ImGui::DestroyContext();
     // Delete window before ending the program
 	glfwDestroyWindow(window);
     // To exit the window when it leaves the while loop (It leaves the while loop if there's an close/crash interupt)
