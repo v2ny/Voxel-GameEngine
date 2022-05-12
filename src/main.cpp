@@ -68,7 +68,7 @@ int main()
     // Define ImGuiHelper
     ImGuiHelper igh;
     // Define GUI
-    GUI_CLASS AppGui;
+    // GUI_CLASS AppGui;
 
     // At the first initialize glfw
     glfwInit();
