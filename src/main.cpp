@@ -10,36 +10,66 @@
 #include <Organizing/VAO/VAO.h>
 #include <Organizing/VBO/VBO.h>
 #include <Organizing/EBO/EBO.h>
+#include <Camera.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <ImGuiHelper.h>
+#include <CustomMessageBox.h>
+#include <GUI.h>
 
-int wWidth = 1024;
-int wHeight = 600;
+// [-----------------Default opts-----------------]
+
+// Dimensions
+static int wWidth = 1024;
+static int wHeight = 600;
+
+// Window title
 const char* wTitle = "Voxel-GameEngine";
 
 // Vertices coordinates
 GLfloat vertices[] =
-{
-	-0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-	-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
-	 0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-	 0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
-	 0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	2.5f, 5.0f
+{ //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
+	-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
+	-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+	 1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+	 1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
 };
 
 // Indices for vertices order
 GLuint indices[] =
 {
 	0, 1, 2,
+	0, 2, 3
+};
+
+GLfloat lightVertices[] =
+{ //     COORDINATES     //
+	-0.1f, -0.1f,  0.1f,
+	-0.1f, -0.1f, -0.1f,
+	 0.1f, -0.1f, -0.1f,
+	 0.1f, -0.1f,  0.1f,
+	-0.1f,  0.1f,  0.1f,
+	-0.1f,  0.1f, -0.1f,
+	 0.1f,  0.1f, -0.1f,
+	 0.1f,  0.1f,  0.1f
+};
+
+GLuint lightIndices[] =
+{
+	0, 1, 2,
 	0, 2, 3,
-	0, 1, 4,
-	1, 2, 4,
-	2, 3, 4,
-	3, 0, 4
+	0, 4, 7,
+	0, 7, 3,
+	3, 7, 6,
+	3, 6, 2,
+	2, 6, 5,
+	2, 5, 1,
+	1, 5, 4,
+	1, 4, 0,
+	4, 5, 6,
+	4, 6, 7
 };
 
 int main()
@@ -50,6 +80,8 @@ int main()
     BoxLogger box_l;
     // Define ImGuiHelper
     ImGuiHelper igh;
+    // Define GUI
+    GUI_CLASS AppGui;
 
     // At the first initialize glfw
     glfwInit();
@@ -58,6 +90,8 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+    // glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Let's create our glfwWindow
     GLFWwindow* window = glfwCreateWindow(wWidth, wHeight, wTitle, NULL, NULL);
@@ -77,8 +111,8 @@ int main()
     }  
     gladLoadGL();
 
-    // Let's select a background color for our window
-    glClearColor(rgbConv.convert(50.0f), rgbConv.convert(50.0f), rgbConv.convert(50.0f), 1.0f);
+    // Hides the window 
+    glfwHideWindow(window);
 
     // Send a test MessageBox with our new function
     // box_l.Log("A basic message", "message", nullptr, box_l.info);
@@ -95,29 +129,68 @@ int main()
 	EBO EBO1(indices, sizeof(indices));
 
 	// Links VBO to VAO
-	VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
-	VAO1.LinkAttribute(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	VAO1.LinkAttribute(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);
+	VAO1.LinkAttribute(VBO1, 1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.LinkAttribute(VBO1, 2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+	VAO1.LinkAttribute(VBO1, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
 	// Unbind all to prevent accidentally modifying them
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-    GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+    // Shader for light cube
+	Shader lightShader("binaries/incl_shaders/lght.vrtx.s.obj", "binaries/incl_shaders/lght.frgmnt.s.obj");
+	// Generates Vertex Array Object and binds it
+	VAO lightVAO;
+	lightVAO.Bind();
+	// Generates Vertex Buffer Object and links it to vertices
+	VBO lightVBO(lightVertices, sizeof(lightVertices));
+	// Generates Element Buffer Object and links it to indices
+	EBO lightEBO(lightIndices, sizeof(lightIndices));
+	// Links VBO attributes such as coordinates and colors to VAO
+	lightVAO.LinkAttribute(lightVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
+	// Unbind all to prevent accidentally modifying them
+	lightVAO.Unbind();
+	lightVBO.Unbind();
+	lightEBO.Unbind();
+
+	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
+	glm::mat4 lightModel = glm::mat4(1.0f);
+	lightModel = glm::translate(lightModel, lightPos);
+
+	glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::mat4 pyramidModel = glm::mat4(1.0f);
+	pyramidModel = glm::translate(pyramidModel, pyramidPos);
+
+	lightShader.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
+	glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	shaderProgram.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
+	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
     // Texture
-    Texture tex1("binaries/pkgs/imgs/ghpng.img.obj", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+    Texture tex1("binaries/pkgs/imgs/materials/Tiles/tdiuse.img.obj", GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE);
     tex1.texUnit(shaderProgram, "tex0", 0);
-
-    // Variables that help the rotation of the pyramid
-	float rotation = 0.0f;
-	double prevTime = glfwGetTime();
+    Texture tex2("binaries/pkgs/imgs/materials/Tiles/tspec.img.obj", GL_TEXTURE_2D, 1, GL_RED, GL_UNSIGNED_BYTE);
+    tex2.texUnit(shaderProgram, "tex1", 0);
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
 
+    // Camera object
+    Camera player0(wWidth, wHeight, glm::vec3(0.0f, 0.0f, 2.0f), window);
+
     // Sets the default settings for imgui and use a custom font
     igh.ImGuiDefaultSettings(window, "binaries/pkgs/fonts/lgeorgecfeb.fnt.obj", "#version 330 core");
+
+    // Registers the glfw window to the AppGui
+    AppGui.GUI_CLASS_REGISTERES(window);
+    
+    // Shows our window
+    glfwShowWindow(window);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -136,166 +209,61 @@ int main()
             HWND hWnd = GetConsoleWindow();
             ShowWindow( hWnd, SW_SHOW );
         }
-
+        
+        // Let's select a background color for our window
+        glClearColor(rgbConv.convert(60.0f), rgbConv.convert(90.0f), rgbConv.convert(170.0f), 1.0f);
         // Let's clear our color buffer bit to get our background color appear!
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Perspective fov
-        static float fov = 45.0f;
+        static float fov = 75.0f;
 
         // Distance View
         static float nearDistanceView = 0.01f;
-        static float farDistanceView = 100.0f;
+        static float farDistanceView = 500.0f;
 
         // Aspect Ratio
         static float svd_width = wWidth;
         static float svd_height = wHeight;
 
-        // Pyramid position
-        static float posX = 0.0f;
-        static float posY = 1.0f;
-        static float posZ = 0.0f;
-
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-		{
-            ImGui::SetNextWindowSize(ImVec2(260, (svd_height)));
-            ImGui::SetNextWindowPos(ImVec2(0, 0));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(260, (svd_height)), ImVec2(260, (svd_height)));
-
-            bool is_open = true;
-            bool is_open2 = true;
-
-            static bool cameraSelected = false;
-            static bool pyramidSelected = false;
-
-            if (ImGui::Begin("game_obj_list", &is_open, ImGuiWindowFlags_NoTitleBar))
-            {
-                std::string objListTitle = "Game Objects List";
-                auto windowWidth = ImGui::GetWindowSize().x;
-                auto textWidth   = ImGui::CalcTextSize(objListTitle.c_str()).x;
-
-                ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-                ImGui::Text(objListTitle.c_str());
-                if (ImGui::Button("Camera", ImVec2(ImGui::GetWindowSize().x, 20)))
-                {
-                    cameraSelected = true;
-                    pyramidSelected = false;
-                }
-                if (ImGui::Button("Pyramid", ImVec2(ImGui::GetWindowSize().x, 20)))
-                {
-                    pyramidSelected = true;
-                    cameraSelected = false;
-                }
-            }
-            
-            ImGui::End();
-
-            ImGui::SetNextWindowSize(ImVec2(260, (svd_height / 1.5)));
-            ImGui::SetNextWindowPos(ImVec2(((svd_width) - 260), 0));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(260, (svd_height / 1.5)), ImVec2(260, (svd_height / 1.5)));
-
-            if (ImGui::Begin("obj_properties", &is_open2, ImGuiWindowFlags_NoTitleBar))
-            {
-                std::string objListTitle = "Object Properties";
-                static const char* status = "\nNo game object selected!";
-
-                auto windowWidth = ImGui::GetWindowSize().x;
-                auto textWidth   = ImGui::CalcTextSize(objListTitle.c_str()).x;
-
-                ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-                ImGui::Text(objListTitle.c_str());
-                ImGui::Text(status);
-                if(cameraSelected == true)
-                {
-                    status = "Game Object: Camera";
-                    ImGui::Text("Camera Position :-");
-                    ImGui::InputFloat("X", &posX, -360.0f, 360.0f, "%.1f", 0);
-                    ImGui::InputFloat("Y", &posY, -360.0f, 360.0f, "%.1f", 0);
-                    ImGui::InputFloat("Z", &posZ, -360.0f, 360.0f, "%.1f", 0);
-                    ImGui::Text("Camera Options :-");
-                    ImGui::SliderFloat("FOV", &fov, 30.0f, 130.0f, "%.1f", 1.0f);
-                    ImGui::SliderFloat("Near Clip", &nearDistanceView, 0.01f, 10.0f, "%.1f", 1.0f);
-                    ImGui::SliderFloat("Far Clip", &farDistanceView, 5.0f, 1500.0f, "%.1f", 1.0f);
-                }
-                else if(pyramidSelected == true)
-                {
-                    status = "Game Object: Pyramid";
-                    ImGui::Text("Pyramid Position :-");
-                    ImGui::SliderFloat("X", &posX, -360.0f, 360.0f, "%.1f", 1.0f);
-                    ImGui::SliderFloat("Y", &posY, -360.0f, 360.0f, "%.1f", 1.0f);
-                    ImGui::SliderFloat("Z", &posZ, -360.0f, 360.0f, "%.1f", 1.0f);
-                }
-                else
-                {
-                    status = "\nNo game object selected!";
-                }
-            }
-
-            ImGui::End();
-
-            // TODO: Rework tommorow 
-
-            ImGui::SetNextWindowSize(ImVec2(svd_width - (260 * 2), svd_height / 0.5));
-            ImGui::SetNextWindowPos(ImVec2(svd_width - (260 * 2), svd_height / 0.5));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(svd_width - (260 * 2), svd_height / 0.5), ImVec2(svd_width - (260 * 2), svd_height / 0.5));
-
-            if (ImGui::Begin("console_output", &is_open2, ImGuiWindowFlags_NoTitleBar))
-            {
-                std::string objListTitle = "Console Output";
-                auto windowWidth = ImGui::GetWindowSize().x;
-                auto textWidth   = ImGui::CalcTextSize(objListTitle.c_str()).x;
-
-                ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-                ImGui::Text(objListTitle.c_str());
-            }
-
-            ImGui::End();
-        }
-
-        // Rendering
+        AppGui.Place(shaderProgram);
         ImGui::Render();
+
+        player0.Inputs(window);
+        player0.updateMatrix(fov, nearDistanceView, farDistanceView);
+
         // It explains it self
         shaderProgram.Activate();
+        
+        GLuint ics = glGetUniformLocation(shaderProgram.ID, "innerConeSize");
+        GLuint ocs = glGetUniformLocation(shaderProgram.ID, "outterConeSize");
 
-        // Simple timer
-        double crntTime = glfwGetTime();
-		if (crntTime - prevTime >= 1 / 60)
-		{
-			rotation += 0.5f;
-			prevTime = crntTime;
-		}
+        glUniform1f(ics, AppGui.appGui_ICS);
+        glUniform1f(ocs, AppGui.appGui_OCS);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
-
-        model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(posX, posY, posZ));
-        if(svd_width < 200)
-        {
-            projection = glm::perspective(glm::radians(fov), (float)(1024 / 600), nearDistanceView, farDistanceView);
-        }
-        else if(svd_width > 200)
-        {
-            projection = glm::perspective(glm::radians(fov), (float)(svd_width / svd_height), nearDistanceView, farDistanceView);
-        }
-
-        int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        int projectionLoc = glGetUniformLocation(shaderProgram.ID, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-        glUniform1f(uniID, 0.5f);
+        glUniform3f(glGetUniformLocation(shaderProgram.ID, "camPos"), player0.Position.x, player0.Position.y, player0.Position.z);
+		// Export the camMatrix to the Vertex Shader of the pyramid
+		player0.Matrix(shaderProgram, "camMatrix");
+        // Bind the textures
         tex1.Bind();
-
+        tex2.Bind();
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+        // Activating Light Shader
+        lightShader.Activate();
+		// Export the camMatrix to the Vertex Shader of the light cube
+		player0.Matrix(lightShader, "camMatrix");
+		// Bind the VAO so OpenGL knows to use it
+		lightVAO.Bind();
+		// Draw primitives, number of indices, datatype of indices, index of indices
+		// glDrawElements(GL_TRIANGLES, sizeof(lightIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+        // Bind the Texture to display it?
 
         // Let's implement our opengl/window viewport
         {
@@ -306,10 +274,10 @@ int main()
             svd_width = winNewWidth;
             svd_height = winNewHeight;
 
-            // TODO: Fix the viewport coordinates
-            glViewport(260, 0, winNewWidth - (260 * 2), winNewHeight - (winNewHeight / 0.5));
+            glViewport(0, 0, winNewWidth, winNewHeight);
         }
 
+        // ImGui Render Draw Data
         igh.ImGuiRenderDD();
 
         // Important to get our window working properly!
@@ -323,10 +291,15 @@ int main()
 	EBO1.Delete();
     tex1.Delete();
 	shaderProgram.Delete();
-    // Delete window before ending the program
+    lightVAO.Delete();
+	lightVBO.Delete();
+	lightEBO.Delete();
+	lightShader.Delete();
+    // Delete's ImGui Rendering Stuff
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    // Delete window before ending the program
 	glfwDestroyWindow(window);
     // To exit the window when it leaves the while loop (It leaves the while loop if there's an close/crash interupt)
     glfwTerminate();
