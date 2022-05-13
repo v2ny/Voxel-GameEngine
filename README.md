@@ -9,10 +9,10 @@
 - Be multi-platform (Windows, MacOS and Linux)
 
 ## - What will we use -
-- IDE: Visual Studio Code
-- Langauge: C/C++
-- API: OpenGL
-- Additional Stuff: ImGUI
+- IDE: Visual Studio Code  - [x]
+- Langauge: C/C++          - [x]
+- API: OpenGL              - [x]
+- Additional Stuff: ImGUI  - [x]
 
 ## - What is a game engine? -
 - A game engine is an program that you can make/create with it games and it most of the time includes 90% of the tools you want
