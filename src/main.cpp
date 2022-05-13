@@ -1,4 +1,4 @@
-#include <Mesh.h>
+#include <Model.h>
 
 #include <floatsToRGB.h>
 #include <BoxLogger.h>
@@ -14,50 +14,6 @@ static int wHeight = 600;
 
 // Window title
 const char* wTitle = "Voxel-GameEngine";
-
-// Vertices coordinates
-Vertex vertices[] =
-{ //               COORDINATES           /            COLORS          /           TexCoord         /       NORMALS         //
-	Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
-	Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
-	Vertex{glm::vec3( 1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
-	Vertex{glm::vec3( 1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
-};
-
-// Indices for vertices order
-GLuint indices[] =
-{
-	0, 1, 2,
-	0, 2, 3
-};
-
-Vertex lightVertices[] =
-{ //     COORDINATES     //
-	Vertex{glm::vec3(-0.1f, -0.1f,  0.1f)},
-	Vertex{glm::vec3(-0.1f, -0.1f, -0.1f)},
-	Vertex{glm::vec3(0.1f, -0.1f, -0.1f)},
-	Vertex{glm::vec3(0.1f, -0.1f,  0.1f)},
-	Vertex{glm::vec3(-0.1f,  0.1f,  0.1f)},
-	Vertex{glm::vec3(-0.1f,  0.1f, -0.1f)},
-	Vertex{glm::vec3(0.1f,  0.1f, -0.1f)},
-	Vertex{glm::vec3(0.1f,  0.1f,  0.1f)}
-};
-
-GLuint lightIndices[] =
-{
-	0, 1, 2,
-	0, 2, 3,
-	0, 4, 7,
-	0, 7, 3,
-	3, 7, 6,
-	3, 6, 2,
-	2, 6, 5,
-	2, 5, 1,
-	1, 5, 4,
-	1, 4, 0,
-	4, 5, 6,
-	4, 6, 7
-};
 
 int main()
 {
@@ -101,44 +57,19 @@ int main()
     // Hides the window 
     glfwHideWindow(window);
 
-    Texture textures[]
-    {
-        Texture("binaries/pkgs/imgs/materials/Tiles/tdiuse.img.obj", "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
-        Texture("binaries/pkgs/imgs/materials/Tiles/tspec.img.obj", "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
-    };
-
     // Send a test MessageBox with our new function
     // box_l.Log("A basic message", "message", nullptr, box_l.info);
 
     Shader shaderProgram("binaries/incl_shaders/vrtx.s.obj", "binaries/incl_shaders/frgmnt.s.obj");
-    std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
-	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
-	std::vector <Texture> tex(textures, textures + sizeof(textures) / sizeof(Texture));
-	// Create floor mesh
-	Mesh floor(verts, ind, tex);
+    // Shader outliningProgram("binaries/incl_shaders/outline.vrtx.s.obj", "binaries/incl_shaders/outline.frgmnt.s.obj");
 
-    // Shader for light cube
-	Shader lightShader("binaries/incl_shaders/lght.vrtx.s.obj", "binaries/incl_shaders/lght.frgmnt.s.obj");
-	// Store mesh data in vectors for the mesh
-	std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));
-	std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
-	// Crate light mesh
-	Mesh light(lightVerts, lightInd, tex);
-
+    // Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::mat4 lightModel = glm::mat4(1.0f);
 	lightModel = glm::translate(lightModel, lightPos);
 
-	glm::vec3 objectPos = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::mat4 objectModel = glm::mat4(1.0f);
-	objectModel = glm::translate(objectModel, objectPos);
-
-	lightShader.Activate();
-	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
-	glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	shaderProgram.Activate();
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
@@ -153,6 +84,9 @@ int main()
 
     // Registers the glfw window to the AppGui
     // AppGui.GUI_CLASS_REGISTERES(window);
+
+    Model model1("binaries/pkgs/mdls/cube/scene.gltf");
+    Model model2("binaries/pkgs/mdls/sword/scene.gltf");
 
     // Shows our window
     glfwShowWindow(window);
@@ -182,7 +116,7 @@ int main()
         // Let's select a background color for our window
         glClearColor(rgbConv.convert(60.0f), rgbConv.convert(90.0f), rgbConv.convert(170.0f), 1.0f);
         // Let's clear our color buffer bit to get our background color appear!
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         // Perspective fov
         static float fov = 75.0f;
@@ -208,10 +142,10 @@ int main()
 
         // glUniform1f(ics, AppGui.appGui_ICS);
         // glUniform1f(ocs, AppGui.appGui_OCS);
-        
-        // Draws our meshs
-        floor.Draw(shaderProgram, player0);
-        light.Draw(lightShader, player0);
+
+        // Draw a model
+		model1.Draw(shaderProgram, player0);
+		model2.Draw(shaderProgram, player0);
 
         // Let's implement our opengl/window viewport
         {
@@ -235,7 +169,6 @@ int main()
 
     // Delete all the objects we've created
 	shaderProgram.Delete();
-	lightShader.Delete();
     // Delete's ImGui Rendering Stuff
     // ImGui_ImplOpenGL3_Shutdown();
     // ImGui_ImplGlfw_Shutdown();

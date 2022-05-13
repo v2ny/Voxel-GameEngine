@@ -1,11 +1,12 @@
 #include <Texture.h>
 
-Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum format, GLenum pixelType)
+Texture::Texture(const char* image, const char* texType, GLuint slot)
 {
     type = texType;
     int widthImg, heightImg, numColCh{};
     unsigned char* bytes;
     stbi_set_flip_vertically_on_load(true);
+    stbi_ldr_to_hdr_gamma(1.0f);
 
     glGenTextures(1, &ID);
     glActiveTexture(GL_TEXTURE0 + slot);
@@ -18,21 +19,22 @@ Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum for
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    if (format == GL_RGBA) {
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    if (numColCh == 4) {
         bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, STBI_rgb_alpha);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, pixelType, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
     }
-    else if (format == GL_RGB) {
+    else if (numColCh == 3) {
         bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, STBI_rgb);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGB, pixelType, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
     }
-    else if (format == GL_RED) {
+    else if (numColCh == 1) {
         bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RED, pixelType, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RED, GL_UNSIGNED_BYTE, bytes);
     }
     else {
         bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthImg, heightImg, 0, GL_RGB, pixelType, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
     }
     glGenerateMipmap(GL_TEXTURE_2D);
 

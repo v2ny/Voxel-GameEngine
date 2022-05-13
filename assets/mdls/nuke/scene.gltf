@@ -1,0 +1,111 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.8.19",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Circle",
+            "rotation" : [
+                0.7071068286895752,
+                0,
+                0,
+                0.7071067094802856
+            ],
+            "scale" : [
+                0.7599999904632568,
+                0.7599999904632568,
+                0.7599999904632568
+            ]
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Circle",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 1680,
+            "max" : [
+                3.6842124462127686,
+                11.57119369506836,
+                3.6842129230499268
+            ],
+            "min" : [
+                -3.6842124462127686,
+                -9.885210990905762,
+                -3.6842126846313477
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 1680,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 1680,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 2712,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 20160,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 20160,
+            "byteOffset" : 20160
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 13440,
+            "byteOffset" : 40320
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 5424,
+            "byteOffset" : 53760
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 59184,
+            "uri" : "scene.bin"
+        }
+    ]
+}
