@@ -25,6 +25,6 @@
 - [x] Achieve Types of lighting
 - [x] Make documents with a basic index.html
 - [x] Use CMake
-- [ ] Load 3D Models (.gltf)
+- [x] Load 3D Models (.gltf)
 - [ ] Load 2 Models or more
 - [ ] Load Different Lighting Sources
